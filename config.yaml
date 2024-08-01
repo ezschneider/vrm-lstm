@@ -1,0 +1,22 @@
+data:
+  raw_path: "raw/vrm.csv"
+  processed_path: "data/processed/vrm.csv"
+  feature_cols: ["feature1", "feature2", "feature3"]
+  target_col: "target"
+  seq_length: 30
+
+preprocessing:
+  scaler: "StandardScaler"
+  min_interval: 5
+  min_spacing: 1
+
+model:
+  input_size: 3
+  hidden_size: 50
+  num_layers: 2
+  output_size: 1
+
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  num_epochs: 50
