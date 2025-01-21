@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import numpy as np
 
 
 class VibrationPlots:
@@ -88,4 +89,36 @@ class VibrationPlots:
         ax4.set_ylabel('Residual')
         
         fig.tight_layout()
+        plt.show()
+    
+    def sma_ema(self):
+        window_size = 10080  # 1 week of data (7 days * 24 hours * 60 minutes)
+        self.df['SMA_7'] = self.df[self.target].rolling(window=window_size).mean()
+        self.df['EMA_7'] = self.df[self.target].ewm(span=window_size, adjust=False).mean()
+
+        fig, ax = plt.subplots(figsize=(16, 6), constrained_layout=True)
+        ax.plot(self.df.index, self.df[self.target], label="Original", color=sns.color_palette("tab10")[0])
+        ax.plot(self.df.index, self.df['SMA_7'], label="SMA (7 days)", linestyle="--", color=sns.color_palette("tab10")[1])
+        ax.plot(self.df.index, self.df['EMA_7'], label="EMA (7 days)", linestyle=":", color=sns.color_palette("tab10")[2])
+        
+        ax.set_title('Simple Moving Average (SMA) and Exponential Moving Average (EMA)')
+        ax.set_xlabel('Time')
+        ax.set_ylabel('Vibration')
+        ax.legend()
+
+        plt.show()
+    
+    def wavelet_transform(self):
+        import pywt
+        
+        # Perform Continuous Wavelet Transform (CWT)
+        scales = np.arange(1, 128)
+        coefficients, frequencies = pywt.cwt(self.df[self.target], scales, 'cmor')
+
+        fig, ax = plt.subplots(figsize=(16, 6), constrained_layout=True)
+        ax.imshow(np.abs(coefficients), extent=[self.df.index.min(), self.df.index.max(), scales.min(), scales.max()],
+                    cmap='PRGn', aspect='auto', vmax=abs(coefficients).max(), vmin=-abs(coefficients).max())
+        ax.set_title('Continuous Wavelet Transform (CWT)')
+        ax.set_ylabel('Scale')
+        ax.set_xlabel('Time')
         plt.show()
