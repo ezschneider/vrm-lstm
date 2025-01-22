@@ -44,7 +44,7 @@ class VibrationPlots:
 
         plt.show()
 
-    def z_score(self):
+    def z_score(self, window_size=20):
         fig, ax = plt.subplots(1, 2, figsize=(16, 6), constrained_layout=True)
 
         # Z-score and Vibration
@@ -68,6 +68,25 @@ class VibrationPlots:
         ax[1].legend()
 
         plt.show()
+
+        # Analyze windows around outliers and plot correlation heatmaps
+        # windows = []
+        # for outlier_index in outlier_points.index:
+        #     start_idx = outlier_index - pd.Timedelta(window_size, unit='min')
+        #     end_idx = outlier_index + pd.Timedelta(window_size, unit='min')
+        #     
+        #     window = self.df.loc[max(self.df.index.min(), start_idx):min(self.df.index.max(), end_idx)]
+        #     windows.append(window)
+        # 
+        #     numeric_window = window.select_dtypes(include=[np.number])
+        #     correlations = numeric_window.corr()
+        # 
+        #     fig, ax = plt.subplots(figsize=(10, 8))
+        #     sns.heatmap(correlations, annot=True, fmt=".2f", cmap="coolwarm", ax=ax)
+        #     ax.set_title(f"Correlation Heatmap around outlier at index {outlier_index}")
+        #     plt.show()
+        # 
+        # return windows
 
     def seasonal_decompose(self):
         from statsmodels.tsa.seasonal import seasonal_decompose
