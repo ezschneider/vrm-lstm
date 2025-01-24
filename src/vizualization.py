@@ -59,7 +59,7 @@ class VibrationPlots:
         ax[1].plot(self.df.index, self.df[self.target], label=self.target, color=sns.color_palette("tab10")[0])
         ax[1].plot(self.df.index, self.df['z_score'], label='Z-score', color=sns.color_palette("tab10")[1])
 
-        outlier_points = self.df[self.df['z_score'].abs() > 3]
+        outlier_points = self.df[self.df['z_score'] > 3]
         ax[1].scatter(outlier_points.index, outlier_points[self.target], color='black', label='Outliers')
 
         ax[1].set_xlabel('Time')
