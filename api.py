@@ -16,11 +16,8 @@ def get_data():
     return response.json()
 
 # %%
-get_data()
-# %%
 def parse_response(data):
     return ApiResponse(**data)
 
 response_data = get_data()
-parsed_data = parse_response(response_data)
-print(parsed_data)
+parse_response(response_data)
