@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
+import ipywidgets as widgets
 
 
 class VibrationPlots:
@@ -57,7 +58,7 @@ class VibrationPlots:
 
         # Z-score and Vibration (with Outliers)
         ax[1].plot(self.df.index, self.df[self.target], label=self.target, color=sns.color_palette("tab10")[0])
-        ax[1].plot(self.df.index, self.df['z_score'], label='Z-score', color=sns.color_palette("tab10")[1])
+        # ax[1].plot(self.df.index, self.df['z_score'], label='Z-score', color=sns.color_palette("tab10")[1])
 
         outlier_points = self.df[self.df['z_score'] > 3]
         ax[1].scatter(outlier_points.index, outlier_points[self.target], color='black', label='Outliers')
@@ -141,3 +142,74 @@ class VibrationPlots:
         ax.set_ylabel('Scale')
         ax.set_xlabel('Time')
         plt.show()
+
+def plot_outlier_window(df, target, outlier_time, window_size):
+    """
+    Plota uma janela em torno de um outlier identificado por Z-score maior que 3.
+    
+    Parâmetros:
+        - df: DataFrame contendo os dados.
+        - target: Nome da coluna alvo (eixo Y).
+        - outlier_time: Índice de tempo do outlier (Timestamp).
+        - window_size: Tamanho da janela (inteiro, número de pontos).
+    """
+    # Verificar se outlier_time está dentro do índice
+    if outlier_time not in df.index:
+        print("Erro: o índice de tempo fornecido não está no DataFrame.")
+        return
+    
+    # Calcular início e fim da janela
+    half_window = window_size // 2
+    start_idx = outlier_time - pd.Timedelta(half_window, unit='min')
+    end_idx = outlier_time + pd.Timedelta(half_window, unit='min')
+    
+    # Garantir que os índices estão dentro do intervalo do DataFrame
+    start_idx = max(df.index.min(), start_idx)
+    end_idx = min(df.index.max(), end_idx)
+    
+    # Selecionar dados da janela
+    window = df.loc[start_idx:end_idx]
+    
+    # Plotar a janela
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(window.index, window[target], label="Vibration", color=sns.color_palette("tab10")[0])
+    ax.axvline(outlier_time, color='red', linestyle='--', label='Outlier')
+    ax.set_title(f'Outlier em {outlier_time} com Janela de {window_size}')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Vibration')
+    ax.legend()
+    plt.show()
+
+# Criar widget interativo
+def interactive_outlier_plot(df, target):
+    """
+    Configura uma interface interativa para escolher o índice do outlier e o tamanho da janela.
+    
+    Parâmetros:
+        - df: DataFrame contendo os dados.
+        - target: Nome da coluna alvo (eixo Y).
+    """
+    # Filtrar os índices dos outliers (Z-score > 3)
+    outliers = df[df['z_score'] > 3].index
+
+    # Criar widgets interativos
+    outlier_selector = widgets.Dropdown(
+        options=[(str(idx), idx) for idx in outliers],
+        description="Outlier:",
+        disabled=False,
+    )
+    window_size_selector = widgets.IntSlider(
+        value=20,
+        min=5,
+        max=100,
+        step=5,
+        description="Janela:",
+        continuous_update=False,
+    )
+    
+    # Configurar interação
+    widgets.interact(
+        lambda outlier_time, window_size: plot_outlier_window(df, target, outlier_time, window_size),
+        outlier_time=outlier_selector,
+        window_size=window_size_selector
+    )
