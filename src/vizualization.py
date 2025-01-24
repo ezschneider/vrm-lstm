@@ -173,6 +173,9 @@ def plot_outlier_window(df, target, outlier_time, window_size):
     # Plotar a janela
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.plot(window.index, window[target], label="Vibration", color=sns.color_palette("tab10")[0])
+    # Change the scale of Corrente motor to 0-1
+    window["Corrente motor"] = (window["Corrente motor"] - window["Corrente motor"].min()) / (window["Corrente motor"].max() - window["Corrente motor"].min())
+    ax.plot(window.index, window["Corrente motor"], label="Motor", color=sns.color_palette("tab10")[1])
     ax.axvline(outlier_time, color='red', linestyle='--', label='Outlier')
     ax.set_title(f'Outlier em {outlier_time} com Janela de {window_size}')
     ax.set_xlabel('Time')
@@ -198,6 +201,20 @@ def interactive_outlier_plot(df, target):
         description="Outlier:",
         disabled=False,
     )
+    # Create a button to go to the next index
+    button = widgets.Button(description='Next')
+    
+    # Define the button click event handler
+    def on_button_click(b):
+        current_index = outlier_selector.index
+        next_index = (current_index + 1) % len(outliers)
+        outlier_selector.index = next_index
+    
+    # Attach the event handler to the button
+    button.on_click(on_button_click)
+    
+    # Display the button
+    display(button)
     window_size_selector = widgets.IntSlider(
         value=20,
         min=5,
