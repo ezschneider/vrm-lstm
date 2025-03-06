@@ -11,14 +11,36 @@ from src.schema import ApiResponse
 load_dotenv(".env")
 
 API_URL = os.getenv("API_URL")
-API_HEADERS = {"apikey": os.getenv("API_KEY")}
+API_URL_WEB_ID = os.getenv("API_URL_WEB_ID")
+API_HEADERS = {
+    "apikey": os.getenv("API_KEY"),
+    "User-Agent": "PostmanRuntime/7.43.0",
+    "Date": "Wed, 26 Feb 2025 22:05:30 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "cache-control": "no-cache",
+    "cf-cache-status": "DYNAMIC",
+    "Set-Cookie": "__cf_bm=Gi8_6cd52epI_dtLlx8AG3u51xcK7UOqxxRwCYYay0g-1740607530-1.0.1.1-kRbr2gjYcUQouiUDnjV94DAIcGSpwt02tXaWT7i.A95R3oR43Hip0FT7Od1bd9Kpix1iJeWEUkrCeWiKEH0mFA; path=/; expires=Wed, 26-Feb-25 22:35:30 GMT; domain=.votorantimcimentos.com; HttpOnly; Secure; SameSite=None",
+    "Content-Security-Policy": "'default-src 'self'",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Strict-Transport-Security": "max-age=15768000",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "SAMEORIGIN",
+    "X-XSS-Protection": "1; mode=block",
+    "Server": "cloudflare",
+    "CF-RAY": "91833ca8fce8f171-GRU",
+    "Content-Encoding": "gzip"
+}
 # %%
 def get_data():
-    web_id = "F1DP-7fYgsRTtUOa7V9NIwSujAts0EAAUElIQVZDXFBDLVoyTTAxWDE"
-    # start_time = "*-13h"
-    # end_time = "03-04-2024"
-    start_time = "*-1d"
-    end_time = "*"
+    web_id = "F1DP-7fYgsRTtUOa7V9NIwSujAt80EAAUElIQVZDXFBDLVoyTTAxWDI"
+    # web_id = "F1DP-7fYgsRTtUOa7V9NIwSujAKQwFAAUElIQVZDXFBDLVoyTTAzTTFYMl9QUF9GSUw"
+    # web_id = "F1DP-7fYgsRTtUOa7V9NIwSujAts0EAAUElIQVZDXFBDLVoyTTAxWDE"
+    start_time = "*-360d"
+    end_time = "*-359d"
+    # start_time = "*-1d"
+    # end_time = "*"
     selected_fields = "Items.Name;Items.Items.Timestamp;Items.Items.Value.Value"
 
     response = requests.get(
@@ -66,8 +88,8 @@ plt.show()
 
 # plot 30min before and after the timestamp equal to 11:30
 def plot_30min(df, timestamp):
-    start_time = timestamp - pd.Timedelta(minutes=30)
-    end_time = timestamp + pd.Timedelta(minutes=30)
+    start_time = timestamp - pd.Timedelta(minutes=10)
+    end_time = timestamp + pd.Timedelta(minutes=10)
     df_30min = df[(df.index >= start_time) & (df.index <= end_time)]
 
     plt.figure(figsize=(10, 5))
@@ -79,5 +101,5 @@ def plot_30min(df, timestamp):
     plt.show()
 
 df.index = df.index.tz_localize(None)
-plot_30min(df, pd.Timestamp('2024-03-04 11:30:00'))
+plot_30min(df, pd.Timestamp('2024-12-05 4:00:00'))
 # %%
